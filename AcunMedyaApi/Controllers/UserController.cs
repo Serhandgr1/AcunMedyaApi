@@ -1,45 +1,53 @@
 ﻿using BuiseneesLayer;
-using DataAccessLayer;
+using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Web.Http.Cors;
 
 namespace AcunMedyaApi.Controllers
 {
+    [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
     [Route("api/[controller]")]
     [ApiController]
+
     public class UserController : ControllerBase
     {
-        [HttpGet("user-name")]
-        public string GetUserByName(int Id)
+        private readonly IUser _user;
+        public UserController()
         {
-            IUser user = new BuiseneesCodes();
-            return user.Name(Id);
+            _user = new BuiseneesCodes();
+        }
+        [HttpGet("user-name")]
+        public async Task<string> GetUserByName(int Id)
+        {
+            return await _user.UserName(Id);
         }
         [HttpGet("User")]
-        public UserModel GetUser(int Id)
+        public async Task<UserModel> GetUser(int Id)
         {
-            IUser user = new BuiseneesCodes();
-            return user.User(Id);
+            return await _user.User(Id);
         }
         [HttpPost("user-post")]
-        public string UserPost(UserModel userModel)
+        public async Task<string> UserPost(UserModel userModel)
         {
-            IUser user = new BuiseneesCodes();
-            user.PostUser(userModel);
+            await _user.PostUser(userModel);
             return "USER KAYIT BAŞARILI";
         }
-        [HttpPut("user-update")]
-        public UserModel UpdateUser(UserModel userModel)
+        [HttpPost("login-user")]
+        public async Task<int> LoginUser(string userName, string password)
         {
-            IUser user = new BuiseneesCodes();
-            return user.UpdateUser(userModel);
+            return await _user.LoginUser(userName, password);
+        }
+        [HttpPut("user-update")]
+        public async Task<UserModel> UpdateUser(UserModel userModel)
+        {
+            return await _user.UpdateUser(userModel);
         }
 
         [HttpDelete("user-delete")]
-        public string UserDelete(int Id)
+        public async Task<string> UserDelete(int Id)
         {
-            IUser user = new BuiseneesCodes();
-            user.UserDelete(Id);
+            await _user.UserDelete(Id);
             return "USER silindi";
         }
     }
